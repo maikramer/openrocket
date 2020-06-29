@@ -543,7 +543,7 @@ public class ComponentAnalysisDialog extends JDialog implements StateChangeListe
 		cgData.clear();
 		dragData.clear();
 		rollData.clear();
-		for (RocketComponent c : configuration.getActiveComponents()) {
+		for (RocketComponent c : configuration.getAllComponents()) {
 			if ( c instanceof AxialStage ) {
 				continue;
 			}

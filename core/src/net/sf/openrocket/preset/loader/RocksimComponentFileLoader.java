@@ -110,16 +110,14 @@ public abstract class RocksimComponentFileLoader {
 		if (is == null) {
 			return;
 		}
-		InputStreamReader r = null;
-		try {
-			r = new InputStreamReader(is);
-			
+		try (InputStreamReader r = new InputStreamReader(is)) {
+
 			// Create the CSV reader.  Use comma separator.
 			CSVReader reader = new CSVReader(r, ',', '\'', '\\');
-			
+
 			//Read and throw away the header row.
 			parseHeaders(reader.readNext());
-			
+
 			String[] data = null;
 			while ((data = reader.readNext()) != null) {
 				// detect empty lines and skip:
@@ -132,16 +130,7 @@ public abstract class RocksimComponentFileLoader {
 				parseData(data);
 			}
 			//Read the rest of the file as data rows.
-			return;
-		} catch (IOException e) {
-		} finally {
-			if (r != null) {
-				try {
-					r.close();
-				} catch (IOException e) {
-				}
-			}
-		}
+		} catch (IOException ignored) {	}
 		
 	}
 	

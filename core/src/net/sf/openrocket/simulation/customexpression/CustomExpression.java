@@ -521,9 +521,9 @@ public class CustomExpression implements Cloneable {
 	 * Used for temporary substitution when evaluating index and range expressions.
 	 */
 	public String hash() {
-		Integer hashint = new Integer(this.getExpressionString().hashCode() + symbol.hashCode());
+		int hashint = this.getExpressionString().hashCode() + symbol.hashCode();
 		String hash = "$";
-		for (char c : hashint.toString().toCharArray()) {
+		for (char c : Integer.toString(hashint).toCharArray()) {
 			if (c == '-')
 				c = '0';
 			char newc = (char) (c + 17);

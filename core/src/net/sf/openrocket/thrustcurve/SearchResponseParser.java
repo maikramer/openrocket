@@ -11,6 +11,8 @@ import net.sf.openrocket.aerodynamics.WarningSet;
 import net.sf.openrocket.file.simplesax.ElementHandler;
 import net.sf.openrocket.file.simplesax.SimpleSAX;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 public class SearchResponseParser implements ElementHandler {
 	
 	private static final String thrustcurveURI = "http://www.thrustcurve.org/2008/SearchResponse";
@@ -58,7 +60,7 @@ public class SearchResponseParser implements ElementHandler {
 	private SearchResponseParser() {
 	}
 	
-	public static SearchResponse parse(InputStream in) throws IOException, SAXException {
+	public static SearchResponse parse(InputStream in) throws IOException, SAXException, ParserConfigurationException {
 		
 		SearchResponseParser handler = new SearchResponseParser();
 		WarningSet warnings = new WarningSet();

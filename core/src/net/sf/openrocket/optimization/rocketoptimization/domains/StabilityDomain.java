@@ -86,9 +86,44 @@ public class StabilityDomain implements SimulationDomain {
 		
 		// Calculate the reference (absolute or relative)
 		absolute = cpx - cgx;
-		
+
+		relative = getRelative(absolute, configuration);
+
+
+		Value desc;
+		if (minAbsolute && maxAbsolute) {
+			desc = new Value(absolute, UnitGroup.UNITS_LENGTH);
+		} else {
+			desc = new Value(relative, UnitGroup.UNITS_STABILITY_CALIBERS);
+		}
+
+		Pair<Double, Value> pair;
+		pair = calcDistanceToDomain(absolute, relative, desc, minAbsolute, minimum, minimum);
+		if (pair != null) return pair;
+
+		pair = calcDistanceToDomain(maximum, maximum, desc, maxAbsolute, absolute, relative);
+		if (pair != null) return pair;
+
+		return new Pair<>(0.0, desc);
+	}
+
+	private Pair<Double, Value> calcDistanceToDomain(double absolute, double relative, Value desc, boolean minAbsolute, double minimum, double minimum2) {
+		double ref;
+		if (minAbsolute) {
+			ref = minimum - absolute;
+		} else {
+			ref = minimum2 - relative;
+		}
+		if (ref > 0) {
+			return new Pair<>(ref, desc);
+		}
+		return null;
+	}
+
+	public static double getRelative(double absolute, FlightConfiguration configuration) {
+		double relative;
 		double diameter = 0;
-		for (RocketComponent c : configuration.getActiveComponents()) {
+		for (RocketComponent c : configuration.getAllComponents()) {
 			if (c instanceof SymmetricComponent) {
 				double d1 = ((SymmetricComponent) c).getForeRadius() * 2;
 				double d2 = ((SymmetricComponent) c).getAftRadius() * 2;
@@ -96,40 +131,6 @@ public class StabilityDomain implements SimulationDomain {
 			}
 		}
 		relative = absolute / diameter;
-		
-		
-		Value desc;
-		if (minAbsolute && maxAbsolute) {
-			desc = new Value(absolute, UnitGroup.UNITS_LENGTH);
-		} else {
-			desc = new Value(relative, UnitGroup.UNITS_STABILITY_CALIBERS);
-		}
-		
-		double ref;
-		if (minAbsolute) {
-			ref = minimum - absolute;
-			if (ref > 0) {
-				return new Pair<Double, Value>(ref, desc);
-			}
-		} else {
-			ref = minimum - relative;
-			if (ref > 0) {
-				return new Pair<Double, Value>(ref, desc);
-			}
-		}
-		
-		if (maxAbsolute) {
-			ref = absolute - maximum;
-			if (ref > 0) {
-				return new Pair<Double, Value>(ref, desc);
-			}
-		} else {
-			ref = relative - maximum;
-			if (ref > 0) {
-				return new Pair<Double, Value>(ref, desc);
-			}
-		}
-		
-		return new Pair<Double, Value>(0.0, desc);
+		return relative;
 	}
 }

@@ -26,6 +26,8 @@ import net.sf.openrocket.motor.ThrustCurveMotor;
 import net.sf.openrocket.motor.ThrustCurveMotor.Builder;
 import net.sf.openrocket.util.Coordinate;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 public class RockSimMotorLoader extends AbstractMotorLoader {
 	
 	private static final Logger log = LoggerFactory.getLogger(RockSimMotorLoader.class);
@@ -69,7 +71,7 @@ public class RockSimMotorLoader extends AbstractMotorLoader {
 		try {
 			SimpleSAX.readXML(source, handler, warnings);
 			return handler.getMotors();
-		} catch (SAXException e) {
+		} catch (SAXException | ParserConfigurationException e) {
 			throw new IOException(e.getMessage(), e);
 		}
 	}

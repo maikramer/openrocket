@@ -11,6 +11,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 
 /**
  * A "simple SAX" XML reader.  This system imposes the limit that an XML element may
@@ -38,7 +42,7 @@ public class SimpleSAX {
 	 * @throws SAXException		if e.g. malformed XML is encountered.
 	 */
 	public static void readXML(InputSource source, ElementHandler initialHandler,
-			WarningSet warnings) throws IOException, SAXException {
+			WarningSet warnings) throws IOException, SAXException, ParserConfigurationException {
 
 		DelegatorHandler xmlhandler = new DelegatorHandler(initialHandler, warnings);
 
@@ -58,14 +62,17 @@ public class SimpleSAX {
 
 		private final BlockingQueue<XMLReader> queue;
 		private XMLReaderCache( int maxSize ) {
-			this.queue = new LinkedBlockingQueue<XMLReader>(maxSize);
+			this.queue = new LinkedBlockingQueue<>(maxSize);
 		}
 
-		private XMLReader createXMLReader() throws SAXException {
+		private XMLReader createXMLReader() throws SAXException, ParserConfigurationException {
 
 			XMLReader reader = queue.poll();
 			if ( reader == null ) {
-				reader = XMLReaderFactory.createXMLReader();
+				SAXParserFactory factory= SAXParserFactory.newInstance();
+				factory.setNamespaceAware(true);
+				SAXParser parser = factory.newSAXParser();
+				reader = factory.newSAXParser().getXMLReader();
 			}
 			return reader;
 		}

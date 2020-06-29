@@ -753,7 +753,7 @@ public class OpenRocketDocument implements ComponentChangeListener {
 	 * @return	a copy of this document.
 	 */
 	public OpenRocketDocument copy() {
-		Rocket rocketCopy = rocket.copyWithOriginalID();
+		Rocket rocketCopy = rocket.deepCopyWithOriginalID();
 		OpenRocketDocument documentCopy = OpenRocketDocumentFactory.createDocumentFromRocket(rocketCopy);
 		
 		for (Simulation s : simulations) {

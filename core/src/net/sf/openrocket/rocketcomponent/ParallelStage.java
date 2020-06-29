@@ -16,10 +16,10 @@ public class ParallelStage extends AxialStage implements FlightConfigurableCompo
 	private static final Translator trans = Application.getTranslator();
 	//private static final Logger log = LoggerFactory.getLogger(BoosterSet.class);
 	
-	protected int instanceCount = 1;
+	protected int instanceCount;
 
 	protected AngleMethod angleMethod = AngleMethod.RELATIVE;
-	protected double angleSeparation = Math.PI;
+	protected double angleSeparation;
 	protected double angleOffset_rad = 0;
 	
 	protected RadiusMethod radiusMethod = RadiusMethod.RELATIVE;
@@ -47,7 +47,7 @@ public class ParallelStage extends AxialStage implements FlightConfigurableCompo
 	// not strictly accurate, but this should provide an acceptable estimate for total vehicle size 
 	@Override
 	public Collection<Coordinate> getComponentBounds() {
-		Collection<Coordinate> bounds = new ArrayList<Coordinate>(8);
+		Collection<Coordinate> bounds = new ArrayList<>(8);
 		double x_min = Double.MAX_VALUE;
 		double x_max = Double.MIN_VALUE;
 		double r_max = 0;
@@ -91,8 +91,7 @@ public class ParallelStage extends AxialStage implements FlightConfigurableCompo
 	
 	@Override
 	protected RocketComponent copyWithOriginalID() {
-		ParallelStage copy = (ParallelStage) (super.copyWithOriginalID());
-		return copy;
+		return super.copyWithOriginalID();
 	}
 
 	@Override
@@ -192,22 +191,21 @@ public class ParallelStage extends AxialStage implements FlightConfigurableCompo
 	@Override
 	public void setAngleOffset(final double angle_rad) {
 		mutex.verify();
-		this.angleOffset_rad = MathUtil.reduce180( angle_rad);
+		this.angleOffset_rad = MathUtil.reducePI( angle_rad);
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 		
 	@Override
 	public void setRadius( final RadiusMethod requestedMethod, final double requestedRadius ) {
 		mutex.verify();
-		
-		RadiusMethod newMethod = requestedMethod; 
+
 		double newRadius = requestedRadius;
 		
-		if( newMethod.clampToZero() ) {
+		if( requestedMethod.clampToZero() ) {
 			newRadius = 0.;
 		}	
 
-		this.radiusMethod = newMethod;
+		this.radiusMethod = requestedMethod;
 		this.radiusOffset_m = newRadius;
 
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);

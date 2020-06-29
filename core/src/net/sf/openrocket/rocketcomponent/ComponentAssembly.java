@@ -178,8 +178,7 @@ public abstract class ComponentAssembly extends RocketComponent implements  Axia
 		}
 		
 		this.updateChildSequence();
-		
-		return;
+
 	}
 	
 	
@@ -187,10 +186,8 @@ public abstract class ComponentAssembly extends RocketComponent implements  Axia
 	public void updateBounds() {
 		// currently only updates the length 
 		this.length = 0;
-		Iterator<RocketComponent> childIterator = this.getChildren().iterator();
-		while (childIterator.hasNext()) {
-			RocketComponent curChild = childIterator.next();
-			if(curChild.isAfter()){
+		for (RocketComponent curChild : this.getChildren()) {
+			if (curChild.isAfter()) {
 				this.length += curChild.getLength();
 			}
 		}

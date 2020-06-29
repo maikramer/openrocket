@@ -8,7 +8,7 @@ public enum ReferenceType {
 	NOSECONE {
 		@Override
 		public double getReferenceLength(FlightConfiguration config) {
-			for (RocketComponent c : config.getActiveComponents()) {
+			for (RocketComponent c : config.getAllComponents()) {
 				if (c instanceof SymmetricComponent) {
 					SymmetricComponent s = (SymmetricComponent) c;
 					if (s.getForeRadius() >= 0.0005)
@@ -25,7 +25,7 @@ public enum ReferenceType {
 		@Override
 		public double getReferenceLength(FlightConfiguration config) {
 			double r = 0;
-			for (RocketComponent c : config.getActiveComponents()) {
+			for (RocketComponent c : config.getAllComponents()) {
 				if (c instanceof SymmetricComponent) {
 					SymmetricComponent s = (SymmetricComponent) c;
 					r = Math.max(r, s.getForeRadius());

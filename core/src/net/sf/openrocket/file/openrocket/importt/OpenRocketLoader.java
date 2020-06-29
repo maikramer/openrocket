@@ -21,6 +21,8 @@ import net.sf.openrocket.simulation.FlightDataBranch;
 import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.simulation.extension.SimulationExtension;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 
 /**
  * Class that loads a rocket definition from an OpenRocket rocket file.
@@ -48,7 +50,7 @@ public class OpenRocketLoader extends AbstractRocketLoader {
 		
 		try {
 			SimpleSAX.readXML(xmlSource, handler, warnings);
-		} catch (SAXException e) {
+		} catch (SAXException | ParserConfigurationException e) {
 			log.warn("Malformed XML in input");
 			throw new RocketLoadException("Malformed XML in input.", e);
 		}

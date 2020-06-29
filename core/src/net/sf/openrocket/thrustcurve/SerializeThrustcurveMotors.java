@@ -19,6 +19,8 @@ import net.sf.openrocket.motor.Motor;
 import net.sf.openrocket.motor.ThrustCurveMotor;
 import net.sf.openrocket.util.Pair;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 public class SerializeThrustcurveMotors {
 	
 	private static String[] manufacturers = {
@@ -56,7 +58,7 @@ public class SerializeThrustcurveMotors {
 		String inputDir = args[0];
 		String outputFile = args[1];
 		
-		final List<Motor> allMotors = new ArrayList<Motor>();
+		final List<Motor> allMotors = new ArrayList<>();
 		
 		loadFromLocalMotorFiles(allMotors, inputDir);
 		
@@ -75,7 +77,7 @@ public class SerializeThrustcurveMotors {
 		
 	}
 	
-	public static void loadFromThrustCurve(List<Motor> allMotors) throws SAXException, MalformedURLException, IOException {
+	public static void loadFromThrustCurve(List<Motor> allMotors) throws SAXException, IOException, ParserConfigurationException {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		for (String m : manufacturers) {
@@ -85,14 +87,8 @@ public class SerializeThrustcurveMotors {
 			SearchResponse res = ThrustCurveAPI.doSearch(searchRequest);
 			
 			for (TCMotor mi : res.getResults()) {
-				StringBuilder message = new StringBuilder();
-				message.append(mi.getManufacturer_abbr());
-				message.append(" ");
-				message.append(mi.getCommon_name());
-				message.append(" ");
-				message.append(mi.getMotor_id());
-				
-				if (mi.getData_files() == null || mi.getData_files().intValue() == 0) {
+
+				if (mi.getData_files() == null || mi.getData_files() == 0) {
 					continue;
 				}
 				
@@ -111,7 +107,12 @@ public class SerializeThrustcurveMotors {
 					type = Motor.Type.UNKNOWN;
 					break;
 				}
-				
+
+				String message = mi.getManufacturer_abbr() +
+						" " +
+						mi.getCommon_name() +
+						" " +
+						mi.getMotor_id();
 				System.out.println(message);
 				
 				List<MotorBurnFile> b = getThrustCurvesForMotorId(mi.getMotor_id());
@@ -124,9 +125,9 @@ public class SerializeThrustcurveMotors {
 						if (mi.getTot_mass_g() != null) {
 							builder.setInitialMass(mi.getTot_mass_g() / 1000.0);
 						}
-						if (mi.getProp_mass_g() != null) {
-							// builder.setPropellantMass(mi.getProp_mass_g() / 1000.0);
-						}
+//						if (mi.getProp_mass_g() != null) {
+//							 builder.setPropellantMass(mi.getProp_mass_g() / 1000.0);
+//						}
 						
 						builder.setCaseInfo(mi.getCase_info());
 						builder.setPropellantInfo(mi.getProp_info());

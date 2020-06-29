@@ -330,7 +330,7 @@ public class BasicEventSimulationEngine implements SimulationEngine {
 			
 			
 			// Check for recovery device deployment, add events to queue
-			for (RocketComponent c : currentStatus.getConfiguration().getActiveComponents()) {
+			for (RocketComponent c : currentStatus.getConfiguration().getAllComponents()) {
 				if (!(c instanceof RecoveryDevice))
 					continue;
 				DeploymentConfiguration deployConfig = ((RecoveryDevice) c).getDeploymentConfigurations().get(this.fcid);

@@ -11,6 +11,8 @@ import net.sf.openrocket.aerodynamics.WarningSet;
 import net.sf.openrocket.file.simplesax.ElementHandler;
 import net.sf.openrocket.file.simplesax.SimpleSAX;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 public class DownloadResponseParser implements ElementHandler {
 	
 	private static final String thrustcurveURI = "http://www.thrustcurve.org/2009/DownloadResponse";
@@ -33,7 +35,7 @@ public class DownloadResponseParser implements ElementHandler {
 	private DownloadResponseParser() {
 	};
 	
-	public static DownloadResponse parse(InputStream in) throws IOException, SAXException {
+	public static DownloadResponse parse(InputStream in) throws IOException, SAXException, ParserConfigurationException {
 		
 		DownloadResponseParser handler = new DownloadResponseParser();
 		WarningSet warnings = new WarningSet();

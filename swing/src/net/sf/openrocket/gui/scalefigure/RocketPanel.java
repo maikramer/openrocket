@@ -142,11 +142,13 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 
 	// The functional ID of the rocket that was simulated
 	private int flightDataFunctionalID = -1;
+	//Check if Config Changed
+	private int configModID = -1;
     private FlightConfigurationId flightDataMotorID = null;
 
 	private SimulationWorker backgroundSimulationWorker = null;
 
-	private List<EventListener> listeners = new ArrayList<EventListener>();
+	private final List<EventListener> listeners = new ArrayList<EventListener>();
 
 
 	/**
@@ -158,7 +160,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 	static {
 		backgroundSimulationExecutor = Executors.newFixedThreadPool(SwingPreferences.getMaxThreadCount(),
 				new ThreadFactory() {
-										private ThreadFactory factory = Executors.defaultThreadFactory();
+										private final ThreadFactory factory = Executors.defaultThreadFactory();
 
 										@Override
 										public Thread newThread(Runnable r) {
@@ -227,7 +229,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 
 		figure3d.addComponentSelectionListener(new RocketFigure3d.ComponentSelectionListener() {
 			@Override
-			public void componentClicked(RocketComponent clicked[], MouseEvent event) {
+			public void componentClicked(RocketComponent[] clicked, MouseEvent event) {
 				handleComponentClick(clicked, event);
 			}
 		});
@@ -323,6 +325,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 		add(label, "growx, right");
 
 		final ConfigurationComboBox configComboBox = new ConfigurationComboBox(rkt);
+		rkt.addChangeListener((var)->configComboBox.repaint());
 		add(configComboBox, "wrap, width 16%, wmin 100");
 
 		// Create slider and scroll pane
@@ -341,12 +344,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 
 		add(rotationSlider = new BasicSlider(rotationModel.getSliderModel(0, 2 * Math.PI), JSlider.VERTICAL, true),
 				"ax 50%, wrap, width " + (d.width + 6) + "px:null:null, growy");
-		rotationSlider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				updateExtras();
-			}
-		});
+		rotationSlider.addChangeListener(e -> updateExtras());
 
 		//// <html>Click to select &nbsp;&nbsp; Shift+click to select other &nbsp;&nbsp; Double-click to edit &nbsp;&nbsp; Click+drag to move
 		infoMessage = new JLabel(trans.get("RocketPanel.lbl.infoMessage"));
@@ -558,7 +556,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 	 * Updates the extra data included in the figure.  Currently this includes
 	 * the CP and CG carets.
 	 */
-	private WarningSet warnings = new WarningSet();
+	private final WarningSet warnings = new WarningSet();
 
 	private void updateExtras() {
 		Coordinate cp, cg;
@@ -660,11 +658,12 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 
 		// Check whether data is already up to date
 		if (flightDataFunctionalID == curConfig.getRocket().getFunctionalModID() &&
-				flightDataMotorID == curConfig.getId()) {
+				flightDataMotorID == curConfig.getId() && configModID == curConfig.getModID()) {
 			return;
 		}
 
 		flightDataFunctionalID = curConfig.getRocket().getFunctionalModID();
+		configModID = curConfig.getModID();
 		flightDataMotorID = curConfig.getId();
 
 		// Stop previous computation (if any)
@@ -773,7 +772,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 		extraCG = new CGCaret(0, 0);
 		extraCP = new CPCaret(0, 0);
 		extraText = new RocketInfo(curConfig);
-		
+
 		updateExtras();
 
 		figure.clearRelativeExtra();
@@ -789,7 +788,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 	}
 
 	/**
-	 * Updates the selection in the FigureParameters and repaints the figure.  
+	 * Updates the selection in the FigureParameters and repaints the figure.
 	 * Ignores the event itself.
 	 */
 	@Override

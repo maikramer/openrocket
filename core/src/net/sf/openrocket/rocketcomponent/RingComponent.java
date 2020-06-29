@@ -102,7 +102,7 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 	 * @param dir  the radial direction.
 	 */
 	public void setRadialDirection(double dir) {
-		dir = MathUtil.reduce180(dir);
+		dir = MathUtil.reducePI(dir);
 		if (radialDirection == dir)
 			return;
 		radialDirection = dir;

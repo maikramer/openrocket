@@ -1,5 +1,6 @@
 package net.sf.openrocket.optimization.rocketoptimization.parameters;
 
+import net.sf.openrocket.optimization.rocketoptimization.domains.StabilityDomain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,58 +44,51 @@ public class StabilityParameter implements OptimizableParameter {
 	}
 	
 	@Override
-	public double computeValue(Simulation simulation) throws OptimizationException {
+	public double computeValue(Simulation simulation) {
 		Coordinate cp, cg;
 		double cpx, cgx;
 		double stability;
-		
+
 		log.debug("Calculating stability of simulation, absolute=" + absolute);
-		
+
 		/*
 		 * These are instantiated each time because this class must be thread-safe.
 		 * Caching would in any case be inefficient since the rocket changes all the time.
 		 */
 		AerodynamicCalculator aerodynamicCalculator = new BarrowmanCalculator();
-		
+
 		FlightConfiguration configuration = simulation.getRocket().getSelectedConfiguration();
 		FlightConditions conditions = new FlightConditions(configuration);
 		conditions.setMach(Application.getPreferences().getDefaultMach());
 		conditions.setAOA(0);
 		conditions.setRollRate(0);
-		
+
 		cp = aerodynamicCalculator.getWorstCP(configuration, conditions, null);
 		// worst case CM is also 
 		cg = MassCalculator.calculateLaunch(configuration).getCM();
-		
+
 		if (cp.weight > 0.000001)
 			cpx = cp.x;
 		else
 			cpx = Double.NaN;
-		
+
 		if (cg.weight > 0.000001)
 			cgx = cg.x;
 		else
 			cgx = Double.NaN;
-		
-		
+
+
 		// Calculate the reference (absolute or relative)
 		stability = cpx - cgx;
-		
+
+		double relative = 0;
 		if (!absolute) {
-			double diameter = 0;
-			for (RocketComponent c : configuration.getActiveComponents()) {
-				if (c instanceof SymmetricComponent) {
-					double d1 = ((SymmetricComponent) c).getForeRadius() * 2;
-					double d2 = ((SymmetricComponent) c).getAftRadius() * 2;
-					diameter = MathUtil.max(diameter, d1, d2);
-				}
-			}
-			stability = stability / diameter;
+			relative = StabilityDomain.getRelative(stability, configuration);
 		}
-		
-		log.debug("Resulting stability is " + stability + ", absolute=" + absolute);
-		
-		return stability;
+
+		log.debug("Resulting stability is " + relative + ", absolute=" + absolute);
+
+		return relative;
 	}
 	
 	@Override

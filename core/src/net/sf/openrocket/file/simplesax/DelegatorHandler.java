@@ -50,6 +50,7 @@ class DelegatorHandler extends DefaultHandler {
 		
 		// Call the handler
 		ElementHandler h = handlerStack.peek();
+		assert h != null;
 		h = h.openElement(localName, elementAttributes.peek(), warnings);
 		if (h != null) {
 			handlerStack.push(h);
@@ -64,12 +65,13 @@ class DelegatorHandler extends DefaultHandler {
 	 * Stores encountered characters in the elementData stack.
 	 */
 	@Override
-	public void characters(char[] chars, int start, int length) throws SAXException {
+	public void characters(char[] chars, int start, int length) {
 		// Check for ignore
 		if (ignore > 0)
 			return;
 		
 		StringBuilder sb = elementData.peek();
+		assert sb != null;
 		sb.append(chars, start, length);
 	}
 	
@@ -97,12 +99,13 @@ class DelegatorHandler extends DefaultHandler {
 		h.endHandler(localName, attr, data, warnings);
 		
 		h = handlerStack.peek();
+		assert h != null;
 		h.closeElement(localName, attr, data, warnings);
 	}
 	
 	
 	private static HashMap<String, String> copyAttributes(Attributes atts) {
-		HashMap<String, String> ret = new HashMap<String, String>();
+		HashMap<String, String> ret = new HashMap<>();
 		for (int i = 0; i < atts.getLength(); i++) {
 			ret.put(atts.getLocalName(i), atts.getValue(i));
 		}

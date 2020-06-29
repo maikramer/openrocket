@@ -80,7 +80,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 				new LinkedHashMap<RocketComponent, AerodynamicForces>();
 		
 		// Add all components to the map
-		for (RocketComponent component : configuration.getActiveComponents()) {
+		for (RocketComponent component : configuration.getAllComponents()) {
 			
 			// Skip non-aerodynamic components
 			if (!component.isAerodynamic())
@@ -511,7 +511,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 	 * @param configuration		Rocket configuration
 	 * @param conditions		Flight conditions taken into account
 	 * @param map				?
-	 * @param set				Set to handle 
+	 * @param warnings			Warning Set
 	 * @return
 	 */
 	private double calculatePressureDrag(FlightConfiguration configuration, FlightConditions conditions,
@@ -580,7 +580,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 	 * @param configuration		Rocket configuration
 	 * @param conditions		Flight conditions taken into account
 	 * @param map				?
-	 * @param set				Set to handle 
+	 * @param warnings			Warnings
 	 * @return
 	 */
 	private double calculateBaseDrag(FlightConfiguration configuration, FlightConditions conditions,
@@ -763,7 +763,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 			cacheLength = 0;
 			cacheDiameter = 0;
 			
-			for (RocketComponent c : configuration.getActiveComponents()) {
+			for (RocketComponent c : configuration.getAllComponents()) {
 				if (c instanceof SymmetricComponent) {
 					SymmetricComponent s = (SymmetricComponent) c;
 					area += s.getComponentPlanformArea();
@@ -782,7 +782,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 		
 		// Fins
 		// TODO: LOW: This could be optimized a lot...
-		for (RocketComponent c : configuration.getActiveComponents()) {
+		for (RocketComponent c : configuration.getAllComponents()) {
 			if (c instanceof FinSet) {
 				FinSet f = (FinSet) c;
 				mul += 0.6 * Math.min(f.getFinCount(), 4) * f.getPlanformArea() *

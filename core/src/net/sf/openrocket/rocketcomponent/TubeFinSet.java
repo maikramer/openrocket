@@ -207,7 +207,7 @@ public class TubeFinSet extends ExternalComponent implements AxialPositionable {
 	 * @param r The base rotation amount.
 	 */
 	public void setBaseRotation(double r) {
-		r = MathUtil.reduce180(r);
+		r = MathUtil.reducePI(r);
 		if (MathUtil.equals(r, rotation))
 			return;
 		rotation = r;

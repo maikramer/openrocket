@@ -187,7 +187,7 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
 	 * @param rotation the clusterRotation to set
 	 */
 	public void setClusterRotation(double rotation) {
-		rotation = MathUtil.reduce180(rotation);
+		rotation = MathUtil.reducePI(rotation);
 		if (clusterRotation == rotation)
 			return;
 		this.clusterRotation = rotation;

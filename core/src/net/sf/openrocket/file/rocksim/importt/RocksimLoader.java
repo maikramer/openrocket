@@ -15,6 +15,8 @@ import net.sf.openrocket.file.DocumentLoadingContext;
 import net.sf.openrocket.file.RocketLoadException;
 import net.sf.openrocket.file.simplesax.SimpleSAX;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 /**
  * This class is the main entry point for Rocksim design file imported to OpenRocket.  Currently only Rocksim v9
  * file formats are supported, although it is possible that v8 formats will work for most components.
@@ -47,7 +49,7 @@ public class RocksimLoader extends AbstractRocketLoader {
 		
 		try {
 			SimpleSAX.readXML(xmlSource, handler, warnings);
-		} catch (SAXException e) {
+		} catch (SAXException | ParserConfigurationException e) {
 			throw new RocketLoadException("Malformed XML in input.", e);
 		}
 		

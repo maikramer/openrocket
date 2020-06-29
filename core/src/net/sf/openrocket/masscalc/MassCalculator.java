@@ -145,7 +145,7 @@ public class MassCalculator implements Monitorable {
 		Map<RocketComponent, Coordinate> map = new HashMap<RocketComponent, Coordinate>();
 		
 		Coordinate rocketCG = Coordinate.ZERO;
-		for (RocketComponent comp : configuration.getActiveComponents()) {
+		for (RocketComponent comp : configuration.getAllComponents()) {
 			Coordinate[] cgs = comp.toAbsolute(comp.getCG());
 			Coordinate stageCG = Coordinate.NUL;
 			for (Coordinate cg : cgs) {

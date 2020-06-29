@@ -151,27 +151,24 @@ public class GeneralRocketLoader {
 			setAttachmentFactory();
 			// Search for entry with name *.ork
 			ZipInputStream in = new ZipInputStream(source);
-			while (true) {
-				ZipEntry entry = in.getNextEntry();
-				if (entry == null) {
-					throw new RocketLoadException("Unsupported or corrupt file.");
-				}
-				if (entry.getName().matches(".*\\.[oO][rR][kK]$")) {
-					loadRocket(in);
-				} else if (entry.getName().matches(".*\\.[rR][kK][tT]$")) {
-					loadRocket(in);
-				}
-				in.close();
-				return;
+			ZipEntry entry = in.getNextEntry();
+			if (entry == null) {
+				throw new RocketLoadException("Unsupported or corrupt file.");
 			}
+			if (entry.getName().matches(".*\\.[oO][rR][kK]$")) {
+				loadRocket(in);
+			} else if (entry.getName().matches(".*\\.[rR][kK][tT]$")) {
+				loadRocket(in);
+			}
+			in.close();
+			return;
 			
 		}
 		
 		isContainer = false;
 		setAttachmentFactory();
 		loadRocket(source);
-		return;
-		
+
 	}
 	
 	private void loadRocket(InputStream source) throws IOException, RocketLoadException {

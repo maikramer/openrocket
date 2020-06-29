@@ -96,6 +96,15 @@ public class RocketFigure extends AbstractScaleFigure {
 		
 		updateFigure();
 	}
+
+	public void SetRocket(Rocket rocket) {
+		this.rocket = rocket;
+
+		this.rotation = 0.0;
+		this.axialRotation = Transformation.rotate_x(0.0);
+
+		updateFigure();
+	}
 	
 	public RocketComponent[] getSelection() {
 		return selection;

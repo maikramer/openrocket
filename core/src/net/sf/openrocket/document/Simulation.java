@@ -1,5 +1,6 @@
 package net.sf.openrocket.document;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.EventListener;
 import java.util.EventObject;
 import java.util.List;
@@ -64,7 +65,7 @@ public class Simulation implements ChangeSource, Cloneable {
 		CANT_RUN
 	}
 	
-	private RocketDescriptor descriptor = Application.getInjector().getInstance(RocketDescriptor.class);
+	private final RocketDescriptor descriptor = Application.getInjector().getInstance(RocketDescriptor.class);
 	
 	
 	private SafetyMutex mutex = SafetyMutex.newInstance();
@@ -87,7 +88,7 @@ public class Simulation implements ChangeSource, Cloneable {
 	private Class<? extends SimulationStepper> simulationStepperClass = RK4SimulationStepper.class;
 	private Class<? extends AerodynamicCalculator> aerodynamicCalculatorClass = BarrowmanCalculator.class;
 	@SuppressWarnings("unused")
-	private Class<? extends MassCalculator> massCalculatorClass = MassCalculator.class;
+	private final Class<? extends MassCalculator> massCalculatorClass = MassCalculator.class;
 	
 	/** Listeners for this object */
 	private List<EventListener> listeners = new ArrayList<EventListener>();
@@ -185,7 +186,7 @@ public class Simulation implements ChangeSource, Cloneable {
 	/**
 	 * Set the motor configuration ID.  If this id does not yet exist, it will be created.
 	 * 
-	 * @param id	the configuration to set.
+	 * @param fcid	the configuration to set.
 	 */
 	public void setFlightConfigurationId(FlightConfigurationId fcid) {
 		if ( null == fcid ){
@@ -337,7 +338,6 @@ public class Simulation implements ChangeSource, Cloneable {
 			throws SimulationException {
 		mutex.lock("simulate");
 		try {
-			
 			if (this.status == Status.EXTERNAL) {
 				throw new SimulationException("Cannot simulate imported simulation.");
 			}
@@ -345,13 +345,13 @@ public class Simulation implements ChangeSource, Cloneable {
 			SimulationEngine simulator;
 			
 			try {
-				simulator = simulationEngineClass.newInstance();
-			} catch (InstantiationException e) {
+				simulator = simulationEngineClass.getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | NoSuchMethodException |InvocationTargetException e) {
 				throw new IllegalStateException("Cannot instantiate simulator.", e);
 			} catch (IllegalAccessException e) {
 				throw new IllegalStateException("Cannot access simulator instance?! BUG!", e);
 			}
-			
+
 			SimulationConditions simulationConditions = options.toSimulationConditions();
 			simulationConditions.setSimulation(this);
 			for (SimulationListener l : additionalListeners) {

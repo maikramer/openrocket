@@ -29,7 +29,6 @@ import net.sf.openrocket.rocketcomponent.InstanceMap;
 import net.sf.openrocket.rocketcomponent.MotorMount;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.util.Coordinate;
-import net.sf.openrocket.util.Transformation;
 
 /*
  * @author Bill Kuker <bkuker@billkuker.com>
@@ -66,9 +65,9 @@ public abstract class RocketRenderer {
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		
 		// Store a vector of pickable parts.
-		final Vector<RocketComponent> pickParts = new Vector<RocketComponent>();
+		final Vector<RocketComponent> pickParts = new Vector<>();
 		
-		for (RocketComponent c : configuration.getActiveComponents()) {
+		for (RocketComponent c : configuration.getAllComponents()) {
 			if (ignore != null && ignore.contains(c))
 				continue;
 			
@@ -76,7 +75,7 @@ public abstract class RocketRenderer {
 			// if index is 0x0ABC the color ends up as
 			// 0xA0B0C000 with each nibble in the coresponding
 			// high bits of the RG and B channels.
-			gl.glColor4ub((byte) ((pickParts.size() >> 4) & 0xF0), (byte) ((pickParts.size() << 0) & 0xF0),
+			gl.glColor4ub((byte) ((pickParts.size() >> 4) & 0xF0), (byte) ((pickParts.size()) & 0xF0),
 					(byte) ((pickParts.size() << 4) & 0xF0), (byte) 1);
 			pickParts.add(c);
 			
@@ -99,19 +98,14 @@ public abstract class RocketRenderer {
 		
 		log.trace("Picked pixel color is {} index is {}", pickColor, pickIndex);
 		
-		if (pickIndex < 0 || pickIndex > pickParts.size() - 1)
+		if (pickIndex > pickParts.size() - 1)
 			return null;
 		
 		return pickParts.get(pickIndex);
 	}
 	
 	public void render(GLAutoDrawable drawable, FlightConfiguration configuration, Set<RocketComponent> selection) {
-		
-		if (cr == null)
-			throw new IllegalStateException(this + " Not Initialized");
-		
-
-        Collection<Geometry> geometry = getTreeGeometry( configuration);
+		Collection<Geometry> geometry = getTreeGeometry( configuration);
         
 		GL2 gl = drawable.getGL().getGL2();
 		
@@ -165,7 +159,7 @@ public abstract class RocketRenderer {
 		final InstanceMap imap = config.getActiveInstances();
 
 		// output buffer
-		final Collection<Geometry> treeGeometry = new ArrayList<Geometry>();
+		final Collection<Geometry> treeGeometry = new ArrayList<>();
 
 		for(Map.Entry<RocketComponent, ArrayList<InstanceContext>> entry: imap.entrySet() ) {
 			final RocketComponent comp = entry.getKey();
@@ -214,10 +208,10 @@ public abstract class RocketRenderer {
 		
 			Coordinate[] position = ((RocketComponent) mount).toAbsolute(new Coordinate(((RocketComponent) mount)
 					.getLength() + mount.getMotorOverhang() - length));
-		
-			for (int i = 0; i < position.length; i++) {
+
+			for (Coordinate coordinate : position) {
 				gl.glPushMatrix();
-				gl.glTranslated(position[i].x, position[i].y, position[i].z);
+				gl.glTranslated(coordinate.x, coordinate.y, coordinate.z);
 				renderMotor(gl, motor);
 				gl.glPopMatrix();
 			}

@@ -8,7 +8,7 @@ public abstract class RocketUtils {
 	
 	public static double getLength(Rocket rocket) {
 		double length = 0;
-		Collection<Coordinate> bounds = rocket.getSelectedConfiguration().getBounds();
+		Collection<Coordinate> bounds = rocket.getSelectedConfiguration().getBoundingBox().toCollection();
 		if (!bounds.isEmpty()) {
 			double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
 			for (Coordinate c : bounds) {

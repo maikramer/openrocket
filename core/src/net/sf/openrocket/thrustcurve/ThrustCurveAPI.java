@@ -12,10 +12,12 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 
 public abstract class ThrustCurveAPI {
 	
-	public static SearchResponse doSearch(SearchRequest request) throws MalformedURLException, IOException, SAXException {
+	public static SearchResponse doSearch(SearchRequest request) throws IOException, SAXException, ParserConfigurationException {
 		
 		String requestString = request.toString();
 		
@@ -42,7 +44,7 @@ public abstract class ThrustCurveAPI {
 		return result;
 	}
 	
-	public static List<MotorBurnFile> downloadData(Integer motor_id, String format) throws MalformedURLException, IOException, SAXException {
+	public static List<MotorBurnFile> downloadData(Integer motor_id, String format) throws MalformedURLException, IOException, SAXException, ParserConfigurationException {
 		
 		if (motor_id == null) {
 			return null;

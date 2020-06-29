@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import net.sf.openrocket.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,12 +16,6 @@ import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.motor.MotorConfiguration;
 import net.sf.openrocket.motor.MotorConfigurationId;
 import net.sf.openrocket.startup.Application;
-import net.sf.openrocket.util.ArrayList;
-import net.sf.openrocket.util.BoundingBox;
-import net.sf.openrocket.util.Coordinate;
-import net.sf.openrocket.util.MathUtil;
-import net.sf.openrocket.util.Monitorable;
-import net.sf.openrocket.util.Transformation;
 
 
 /**
@@ -202,20 +197,13 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	}
 
 	public Collection<RocketComponent> getAllComponents() {
-		Queue<RocketComponent> toProcess = new ArrayDeque<RocketComponent>();
-		toProcess.offer(this.rocket);
-		
+		Queue<RocketComponent> toProcess = new ArrayDeque<>(this.rocket.getChildren());
 		ArrayList<RocketComponent> toReturn = new ArrayList<>();
 		
 		while (!toProcess.isEmpty()) {
 			RocketComponent comp = toProcess.poll();
-			
 			toReturn.add(comp);
-			for (RocketComponent child : comp.getChildren()) {
-				if (!(child instanceof AxialStage)) {
-					toProcess.offer(child);
-				}
-			}
+			toProcess.addAll(comp.getChildren());
 		}
 		
 		return toReturn;
@@ -325,7 +313,10 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	
 	public List<AxialStage> getActiveStages() {
 		List<AxialStage> activeStages = new ArrayList<>();
-		
+		if(this.stages.size() == 0) {
+			log.warn("No Stages Found");
+			return new ArrayList<>();
+		}
 		for (StageFlags flags : this.stages.values()) {
 			if (flags.active) {
 				activeStages.add( rocket.getStage( flags.stageNumber) );
@@ -392,7 +383,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	
 	// for outgoing events only
 	protected void fireChangeEvent() {
-		this.modID++;
+		this.modID = UniqueID.next();
 		boundsModID = -1;
 		refLengthModID = -1;
 		
@@ -401,6 +392,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	}
 	
 	private void updateStages() {
+		// This is not exactly true, the same number of stages does not mean they are the same
         if (this.rocket.getStageCount() == this.stages.size()) {
             return;
         }
@@ -411,6 +403,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 			StageFlags flagsToAdd = new StageFlags( curStage.getStageNumber(), true);
 			this.stages.put(curStage.getStageNumber(), flagsToAdd);
 		}
+		modID = UniqueID.next();
 	}
 	
 	public boolean isNameOverridden(){
@@ -429,7 +422,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 		StringBuilder buff = new StringBuilder("[");
 		boolean first = true;
 		int activeMotorCount = 0;
-		for ( RocketComponent comp : getActiveComponents() ){
+		for ( RocketComponent comp : getAllComponents() ){
 			if (( comp instanceof MotorMount )&&( ((MotorMount)comp).isMotorMount())){ 
 				MotorMount mount = (MotorMount)comp;
 				MotorConfiguration motorConfig = mount.getMotorConfig( fcid);
@@ -468,8 +461,6 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 		}
 
 		this.motors.put( motorConfig.getID(), motorConfig);
-		
-		modID++;
 	}
 
 	public boolean hasMotors() {
@@ -494,7 +485,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	private void updateMotors() {
 		this.motors.clear();
 		
-		for ( RocketComponent comp : getActiveComponents() ){
+		for ( RocketComponent comp : getAllComponents() ){
 			if (( comp instanceof MotorMount )&&( ((MotorMount)comp).isMotorMount())){
 				MotorMount mount = (MotorMount)comp;
 				MotorConfiguration motorConfig = mount.getMotorConfig( fcid);
@@ -505,6 +496,8 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 				this.motors.put( motorConfig.getMID(), motorConfig);
 			}
 		}
+
+		modID = UniqueID.next();
 		
 	}
 

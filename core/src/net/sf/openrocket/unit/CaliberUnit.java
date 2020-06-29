@@ -98,7 +98,7 @@ public class CaliberUnit extends GeneralUnit {
 	 * @return			the caliber of the rocket, or the default caliber.
 	 */
 	public static double calculateCaliber(FlightConfiguration config) {
-		return calculateCaliber(config.getActiveComponents().iterator());
+		return calculateCaliber(config.getAllComponents().iterator());
 	}
 	
 	/**

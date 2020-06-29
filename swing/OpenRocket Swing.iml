@@ -3,8 +3,8 @@
   <component name="EclipseModuleManager">
     <libelement value="jar://$MODULE_DIR$/lib/jogl/jogl-all.jar!/" />
     <libelement value="jar://$MODULE_DIR$/lib/iText-5.0.2.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/jcommon-1.0.18.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/jfreechart-1.0.15.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/jfreechart-1.6.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/org.jfree.svg-4.1.jar!/" />
     <libelement value="jar://$MODULE_DIR$/lib/OrangeExtensions-1.2.jar!/" />
     <libelement value="jar://$MODULE_DIR$/lib/jogl/gluegen-rt.jar!/" />
     <libelement value="jar://$MODULE_DIR$/../core/lib/slf4j-api-1.7.5.jar!/" />
@@ -93,24 +93,6 @@
       <library name="iText-5.0.2.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/iText-5.0.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="jcommon-1.0.18.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jcommon-1.0.18.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="jfreechart-1.0.15.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jfreechart-1.0.15.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -240,6 +222,26 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../core/lib/guice-4.2.3-no_aop.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jfreechart-1.6.0-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jfreechart-1.6.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/reference/jfreechart-1.6.0-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="" scope="RUNTIME">
+      <library name="org.jfree.svg-4.1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/org.jfree.svg-4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

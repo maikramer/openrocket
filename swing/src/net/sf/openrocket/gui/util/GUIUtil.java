@@ -128,6 +128,16 @@ public class GUIUtil {
 		
 		return (dpi) / 10.0;
 	}
+
+	// 1 pt is 1/72 inches
+	public static float ppiCorrectedFontSize(float pt){
+		return (float) Math.round(pt * ppiCorrectedFontSizeScale(pt));
+	}
+
+	public static float ppiCorrectedFontSizeScale(float pt) {
+		int ppi = Toolkit.getDefaultToolkit().getScreenResolution();
+		return (float) (1.0 / (72.0 / ppi));
+	}
 	
 	
 	

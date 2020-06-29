@@ -45,11 +45,11 @@ import org.jfree.chart.renderer.PaintScale;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYShapeRenderer;
 import org.jfree.chart.title.PaintScaleLegend;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.DefaultXYZDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +130,7 @@ public class OptimizationPlotDialog extends JDialog {
 		Unit yUnit = parameter.getUnitGroup().getDefaultUnit();
 		
 		// Create the optimization path (with autosort)
-		XYSeries series = new XYSeries(trans.get("plot1d.series"), true, true);
+		XYSeries<?> series = new XYSeries<>(trans.get("plot1d.series"), true, true);
 		List<String> tooltips = new ArrayList<String>();
 		for (Point p : evaluations.keySet()) {
 			FunctionEvaluationData data = evaluations.get(p);
@@ -163,19 +163,20 @@ public class OptimizationPlotDialog extends JDialog {
 		// Set the scale of the plot to the limits
 		double x1 = xUnit.toUnit(modX.getMinValue());
 		double x2 = xUnit.toUnit(modX.getMaxValue());
-		
+
+		XYPlot<?> plot = ((XYPlot<?>)chart.getPlot());
 		if (x1 < x2 - 0.0001) {
 			log.debug("Setting 1D plot domain axis x1=" + x1 + " x2=" + x2);
-			chart.getXYPlot().getDomainAxis().setRange(x1, x2);
+			plot.getDomainAxis().setRange(x1, x2);
 		} else {
 			log.warn("1D plot domain singular x1=" + x1 + " x2=" + x2 + ", not setting");
 		}
 		
 		// Add lines to show optimization limits
 		XYLineAnnotation line = new XYLineAnnotation(x1, -1e19, x1, 1e19);
-		chart.getXYPlot().addAnnotation(line);
+		plot.addAnnotation(line);
 		line = new XYLineAnnotation(x2, -1e19, x2, 1e19);
-		chart.getXYPlot().addAnnotation(line);
+		plot.addAnnotation(line);
 		
 		// Mark the optimum point
 		Point optimum = path.get(path.size() - 1);
@@ -189,7 +190,7 @@ public class OptimizationPlotDialog extends JDialog {
 				XYPointerAnnotation text = new XYPointerAnnotation(trans.get("plot.label.optimum"),
 						x, y, Math.PI / 2);
 				text.setTextAnchor(TextAnchor.TOP_LEFT);
-				chart.getXYPlot().addAnnotation(text);
+				plot.addAnnotation(text);
 			}
 		} else {
 			log.error("Could not find evaluation data for point " + optimum);
@@ -197,7 +198,7 @@ public class OptimizationPlotDialog extends JDialog {
 		
 
 		XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, true);
-		lineRenderer.setBaseShapesVisible(true);
+		lineRenderer.setDefaultShapesVisible(true);
 		lineRenderer.setSeriesShapesFilled(0, false);
 		//lineRenderer.setSeriesShape(0, shapeRenderer.getBaseShape());
 		lineRenderer.setSeriesOutlinePaint(0, PATH_COLOR);
@@ -205,9 +206,7 @@ public class OptimizationPlotDialog extends JDialog {
 		lineRenderer.setUseOutlinePaint(true);
 		CustomXYToolTipGenerator tooltipGenerator = new CustomXYToolTipGenerator();
 		tooltipGenerator.addToolTipSeries(tooltips);
-		lineRenderer.setBaseToolTipGenerator(tooltipGenerator);
-		
-		XYPlot plot = chart.getXYPlot();
+		lineRenderer.setDefaultToolTipGenerator(tooltipGenerator);
 		
 		plot.setDataset(0, new XYSeriesCollection(series));
 		plot.setRenderer(lineRenderer);
@@ -232,7 +231,7 @@ public class OptimizationPlotDialog extends JDialog {
 		Unit yUnit = modY.getUnitGroup().getDefaultUnit();
 		
 		// Create the optimization path dataset
-		XYSeries pathSeries = new XYSeries(trans.get("plot2d.path"), false, true);
+		XYSeries<?> pathSeries = new XYSeries<>(trans.get("plot2d.path"), false, true);
 		List<String> pathTooltips = new ArrayList<String>();
 		for (Point p : path) {
 			FunctionEvaluationData data = evaluations.get(p);
@@ -302,29 +301,30 @@ public class OptimizationPlotDialog extends JDialog {
 		double x2 = xUnit.toUnit(modX.getMaxValue());
 		double y1 = yUnit.toUnit(modY.getMinValue());
 		double y2 = yUnit.toUnit(modY.getMaxValue());
-		
+
+		var plot = ((XYPlot<?>)chart.getPlot());
 		if (x1 < x2 - 0.0001) {
 			log.debug("Setting 2D plot domain axis to x1=" + x1 + " x2=" + x2);
-			chart.getXYPlot().getDomainAxis().setRange(x1, x2);
+			plot.getDomainAxis().setRange(x1, x2);
 		} else {
 			log.warn("2D plot has singular domain axis: x1=" + x1 + " x2=" + x2);
 		}
 		
 		if (y1 < y2 - 0.0001) {
 			log.debug("Setting 2D plot range axis to y1=" + y1 + " y2=" + y2);
-			chart.getXYPlot().getRangeAxis().setRange(y1, y2);
+			plot.getRangeAxis().setRange(y1, y2);
 		} else {
 			log.warn("2D plot has singular range axis: y1=" + y1 + " y2=" + y2);
 		}
-		
+
 		XYBoxAnnotation box = new XYBoxAnnotation(x1, y1, x2, y2);
-		chart.getXYPlot().addAnnotation(box);
-		
+		plot.addAnnotation(box);
+
 		int n = pathSeries.getItemCount();
 		XYPointerAnnotation text = new XYPointerAnnotation(trans.get("plot.label.optimum"),
 				(Double) pathSeries.getX(n - 1), (Double) pathSeries.getY(n - 1), -Math.PI / 5);
 		text.setTextAnchor(TextAnchor.BASELINE_LEFT);
-		chart.getXYPlot().addAnnotation(text);
+		plot.addAnnotation(text);
 		
 
 		if (min < max - 0.0001) {
@@ -342,25 +342,22 @@ public class OptimizationPlotDialog extends JDialog {
 		shapeRenderer.setUseFillPaint(true);
 		CustomXYToolTipGenerator tooltipGenerator = new CustomXYToolTipGenerator();
 		tooltipGenerator.addToolTipSeries(evalTooltips);
-		shapeRenderer.setBaseToolTipGenerator(tooltipGenerator);
+		shapeRenderer.setDefaultToolTipGenerator(tooltipGenerator);
 		
 
 		shapeRenderer.getLegendItem(0, 0);
 		
 
 		XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, true);
-		lineRenderer.setBaseShapesVisible(true);
+		lineRenderer.setDefaultShapesVisible(true);
 		lineRenderer.setSeriesShapesFilled(0, false);
-		lineRenderer.setSeriesShape(0, shapeRenderer.getBaseShape());
+		lineRenderer.setSeriesShape(0, shapeRenderer.getDefaultShape());
 		lineRenderer.setSeriesOutlinePaint(0, PATH_COLOR);
 		lineRenderer.setSeriesPaint(0, PATH_COLOR);
 		lineRenderer.setUseOutlinePaint(true);
 		tooltipGenerator = new CustomXYToolTipGenerator();
 		tooltipGenerator.addToolTipSeries(pathTooltips);
-		lineRenderer.setBaseToolTipGenerator(tooltipGenerator);
-		
-
-		XYPlot plot = chart.getXYPlot();
+		lineRenderer.setDefaultToolTipGenerator(tooltipGenerator);
 		
 		plot.setDataset(0, new XYSeriesCollection(pathSeries));
 		plot.setRenderer(lineRenderer);

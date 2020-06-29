@@ -489,7 +489,7 @@ public class RocketFigure3d extends JPanel implements GLEventListener {
 		} else {
 			final Bounds b = new Bounds();
 			final FlightConfiguration configuration = rkt.getSelectedConfiguration();
-			final Collection<Coordinate> bounds = configuration.getBounds();
+			final Collection<Coordinate> bounds = configuration.getBoundingBox().toCollection();
 			for (Coordinate c : bounds) {
 				b.xMax = Math.max(b.xMax, c.x);
 				b.xMin = Math.min(b.xMin, c.x);
@@ -593,14 +593,14 @@ public class RocketFigure3d extends JPanel implements GLEventListener {
 	private void setRoll(final double rot) {
 		if (MathUtil.equals(roll, rot))
 			return;
-		this.roll = MathUtil.reduce360(rot);
+		this.roll = MathUtil.reduce2PI(rot);
 		internalRepaint();
 	}
 	
 	private void setYaw(final double rot) {
 		if (MathUtil.equals(yaw, rot))
 			return;
-		this.yaw = MathUtil.reduce360(rot);
+		this.yaw = MathUtil.reduce2PI(rot);
 		internalRepaint();
 	}
 	

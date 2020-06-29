@@ -1,5 +1,6 @@
 package net.sf.openrocket.util;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 

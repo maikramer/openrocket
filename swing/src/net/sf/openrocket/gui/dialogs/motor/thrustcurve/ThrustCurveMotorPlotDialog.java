@@ -50,7 +50,7 @@ public class ThrustCurveMotorPlotDialog extends JDialog {
 		
 
 		// Add the data and formatting to the plot
-		XYPlot plot = chart.getXYPlot();
+		XYPlot plot = (XYPlot<?>)chart.getPlot();
 		
 		chart.setBackgroundPaint(panel.getBackground());
 		plot.setBackgroundPaint(Color.WHITE);

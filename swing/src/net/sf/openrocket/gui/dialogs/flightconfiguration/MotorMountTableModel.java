@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.jfree.util.Log;
-
 import net.sf.openrocket.rocketcomponent.ComponentChangeEvent;
 import net.sf.openrocket.rocketcomponent.ComponentChangeListener;
 import net.sf.openrocket.rocketcomponent.MotorMount;
@@ -24,7 +22,7 @@ class MotorMountTableModel extends AbstractTableModel implements ComponentChange
 	private final Rocket rocket;
 	
 	/**
-	 * @param motorConfigurationPanel
+	 * @param rocket
 	 */
 	MotorMountTableModel( Rocket rocket) {
 		this.rocket = rocket;
@@ -78,7 +76,7 @@ class MotorMountTableModel extends AbstractTableModel implements ComponentChange
 	public Object getValueAt(int row, int column) {
 		switch (column) {
 		case 0:
-			return new Boolean(potentialMounts.get(row).isMotorMount());
+			return potentialMounts.get(row).isMotorMount();
 			
 		case 1:
 			return potentialMounts.get(row).toString();

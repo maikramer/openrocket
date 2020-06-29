@@ -166,7 +166,7 @@ class MotorInformationPanel extends JPanel {
 					);
 
 			// Add the data and formatting to the plot
-			XYPlot plot = chart.getXYPlot();
+			XYPlot<?> plot = (XYPlot<?>)chart.getPlot();
 
 			changeLabelFont(plot.getRangeAxis(), -2);
 			changeLabelFont(plot.getDomainAxis(), -2);
@@ -240,7 +240,8 @@ class MotorInformationPanel extends JPanel {
 			digestLabel.setText("");
 		}
 		setComment("");
-		chart.getXYPlot().setDataset(new XYSeriesCollection());
+		XYPlot<?> plot = (XYPlot<?>)chart.getPlot();
+		plot.setDataset(new XYSeriesCollection<>());
 	}
 	
 	public void updateData( List<ThrustCurveMotor> motors, ThrustCurveMotor selectedMotor ) {
@@ -283,15 +284,15 @@ class MotorInformationPanel extends JPanel {
 		setComment(selectedMotor.getDescription());
 
 		// Update the plot
-		XYPlot plot = chart.getXYPlot();
+		XYPlot<String> plot = (XYPlot<String>)chart.getPlot();
 		final int index = motors.indexOf(selectedMotor);
 
-		XYSeriesCollection dataset = new XYSeriesCollection();
+		XYSeriesCollection<String> dataset = new XYSeriesCollection<>();
 		for (int i = 0; i < motors.size(); i++) {
 			ThrustCurveMotor m = motors.get(i);
 
 			//// Thrust
-			XYSeries series = new XYSeries(trans.get("TCMotorSelPan.title.Thrust") + " (" + i + ")");
+			XYSeries<String> series = new XYSeries<>(trans.get("TCMotorSelPan.title.Thrust") + " (" + i + ")");
 			double[] time = m.getTimePoints();
 			double[] thrust = m.getThrustPoints();
 

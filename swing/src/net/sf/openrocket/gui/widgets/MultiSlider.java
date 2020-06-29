@@ -323,9 +323,8 @@ public class MultiSlider extends JSlider {
 				accessibleContext.firePropertyChange(
 						AccessibleContext.ACCESSIBLE_VALUE_PROPERTY,
 						(oldModel == null
-						? null : new Integer(oldModel.getValue())),
-						(newModel == null
-						? null : new Integer(newModel.getValue())));
+						? null : oldModel.getValue()),
+						(newModel.getValue()));
 			}
 		}
 
@@ -348,7 +347,7 @@ public class MultiSlider extends JSlider {
 		for (int i = 0; i < count; i++) {
 			getModelAt(i).setMinimum(minimum);
 		}
-		firePropertyChange( "minimum", new Integer( oldMin ), new Integer( minimum ) );
+		firePropertyChange( "minimum", Integer.valueOf(oldMin), Integer.valueOf(minimum));
 	}
 
 	/***
@@ -367,7 +366,7 @@ public class MultiSlider extends JSlider {
 		for (int i = 0; i < count; i++) {
 			getModelAt(i).setMaximum(maximum);
 		}
-		firePropertyChange( "maximum", new Integer( oldMax ), new Integer( maximum ) );
+		firePropertyChange( "maximum", Integer.valueOf(oldMax), Integer.valueOf(maximum));
 	}
 
 	/***
@@ -427,8 +426,8 @@ public class MultiSlider extends JSlider {
 		if (accessibleContext != null) {
 			accessibleContext.firePropertyChange(
 					AccessibleContext.ACCESSIBLE_VALUE_PROPERTY,
-					new Integer(oldValue),
-					new Integer(m.getValue()));
+					oldValue,
+					m.getValue());
 		}
 	}
 

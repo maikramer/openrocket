@@ -109,10 +109,7 @@ public class ThrustCurveMotorSelectionPanel extends JPanel implements MotorSelec
 	
 	/**
 	 * Sole constructor.
-	 * 
-	 * @param current	the currently selected ThrustCurveMotor, or <code>null</code> for none.
-	 * @param delay		the currently selected ejection charge delay.
-	 * @param diameter	the diameter of the motor mount.
+	 *
 	 */
 	public ThrustCurveMotorSelectionPanel() {
 		super(new MigLayout("fill", "[grow][]"));
@@ -181,6 +178,7 @@ public class ThrustCurveMotorSelectionPanel extends JPanel implements MotorSelec
 					
 					String sel = (String) delayBox.getSelectedItem();
 					//// None
+					assert sel != null;
 					if (sel.equalsIgnoreCase(trans.get("TCMotorSelPan.equalsIgnoreCase.None"))) {
 						selectedDelay = Motor.PLUGGED_DELAY;
 					} else {

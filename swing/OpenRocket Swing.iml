@@ -238,8 +238,8 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="" scope="RUNTIME">
-      <library name="org.jfree.svg-4.1">
+    <orderEntry type="module-library">
+      <library name="org.jfree.svg">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/org.jfree.svg-4.1.jar!/" />
         </CLASSES>

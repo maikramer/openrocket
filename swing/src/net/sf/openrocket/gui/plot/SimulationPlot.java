@@ -9,7 +9,6 @@ import net.sf.openrocket.simulation.FlightEvent;
 import net.sf.openrocket.unit.Unit;
 import net.sf.openrocket.unit.UnitGroup;
 import net.sf.openrocket.util.LinearInterpolator;
-import net.sf.openrocket.util.TextUtil;
 import org.jfree.chart.*;
 import org.jfree.chart.annotations.XYImageAnnotation;
 import org.jfree.chart.axis.NumberAxis;
@@ -109,11 +108,14 @@ public class SimulationPlot {
         FlightDataBranch mainBranch = simulation.getSimulatedData().getBranch(0);
         this.filled = config.fillAutoAxes(mainBranch);
         List<Axis> axes = filled.getAllAxes();
+        // Get plot length (ignore trailing NaN's)
+        int typeCount = filled.getTypeCount();
 
         // Create the data series for both axes
-        XYSeriesCollection[] data = new XYSeriesCollection[2];
-        data[0] = new XYSeriesCollection<>();
-        data[1] = new XYSeriesCollection<>();
+        XYSeriesCollection[] data = new XYSeriesCollection[typeCount];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = new XYSeriesCollection();
+        }
 
         // Get the domain axis type
         final FlightDataType domainType = filled.getDomainAxisType();
@@ -122,18 +124,14 @@ public class SimulationPlot {
             throw new IllegalArgumentException("Domain axis type not specified.");
         }
 
-        // Get plot length (ignore trailing NaN's)
-        int typeCount = filled.getTypeCount();
-
         int seriesCount = 0;
 
         // Create the XYSeries objects from the flight data and store into the collections
-        String[] axisLabel = new String[2];
+        String[] axisLabel = new String[axes.size()];
         for (int i = 0; i < typeCount; i++) {
             // Get info
             FlightDataType type = filled.getType(i);
             Unit unit = filled.getUnit(i);
-            int axis = filled.getAxis(i);
             String name = getLabel(type, unit);
 
             List<String> seriesNames = Util.generateSeriesLabels(simulation);
@@ -153,7 +151,7 @@ public class SimulationPlot {
                 for (int j = 0; j < pointCount; j++) {
                     series.add(domainUnit.toUnit(plotx.get(j)), unit.toUnit(ploty.get(j)));
                 }
-                data[axis].addSeries(series);
+                data[i].addSeries(series);
             }
             // For each of the secondary branches, we use data from branch 0 for the earlier times
             for (int branchIndex = 1; branchIndex < branchCount; branchIndex++) {
@@ -186,9 +184,10 @@ public class SimulationPlot {
                 for (int j = 0; j < pointCount; j++) {
                     series.add(domainUnit.toUnit(plotx.get(j)), unit.toUnit(ploty.get(j)));
                 }
-                data[axis].addSeries(series);
+                data[i].addSeries(series);
             }
 
+            int axis = filled.getAxis(i);
             // Update axis label
             if (axisLabel[axis] == null)
                 axisLabel[axis] = type.getName();
@@ -200,29 +199,34 @@ public class SimulationPlot {
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setDomainPannable(true);
         plot.setRangePannable(true);
+        plot.setDomainCrosshairVisible(true);
+        plot.setRangeCrosshairVisible(true);
+        plot.setDomainGridlinesVisible(true);
 
-        int axisno = 0;
-        for (int i = 0; i < 2; i++) {
+        if (data[0].getSeriesCount() > 0) {
+            double domainMin = data[0].getDomainLowerBound(true);
+            double domainMax = data[0].getDomainUpperBound(true);
+            plot.setDomainAxis(new PresetNumberAxis(domainMin, domainMax));
+        }
+
+        // Set Labels
+        for (int i = 0; i < axes.size(); i++) {
+            double min = axes.get(i).getMinValue();
+            double max = axes.get(i).getMaxValue();
+            NumberAxis axis = new PresetNumberAxis(min, max);
+            axis.setLabel(axisLabel[i]);
+            plot.setRangeAxis(i, axis);
+        }
+
+        //Map data
+        for (int i = 0; i < data.length; i++) {
             // Check whether axis has any data
             if (data[i].getSeriesCount() > 0) {
-                // Create and set axis
-                double min = axes.get(i).getMinValue();
-                double max = axes.get(i).getMaxValue();
-                NumberAxis axis = new PresetNumberAxis(min, max);
-                axis.setLabel(axisLabel[i]);
-                //				axis.setRange(axes.get(i).getMinValue(), axes.get(i).getMaxValue());
-                plot.setRangeAxis(axisno, axis);
-
-                double domainMin = data[i].getDomainLowerBound(true);
-                double domainMax = data[i].getDomainUpperBound(true);
-
-                plot.setDomainAxis(new PresetNumberAxis(domainMin, domainMax));
-
                 // Add data and map to the axis
-                plot.setDataset(axisno, data[i]);
+                plot.setDataset(i, data[i]);
                 ModifiedXYItemRenderer r = new ModifiedXYItemRenderer(branchCount);
                 renderers.add(r);
-                plot.setRenderer(axisno, r);
+                plot.setRenderer(i, r);
                 r.setBaseShapesVisible(initialShowPoints);
                 r.setBaseShapesFilled(true);
                 for (int j = 0; j < data[i].getSeriesCount(); j++) {
@@ -243,8 +247,7 @@ public class SimulationPlot {
                     this.legendItems.lineStrokes.add(lineStroke);
                 }
 
-                plot.mapDatasetToRangeAxis(axisno, axisno);
-                axisno++;
+                plot.mapDatasetToRangeAxis(i, filled.getAxis(i));
             }
         }
 
@@ -580,8 +583,8 @@ public class SimulationPlot {
 
                 // Changed:
                 TextAnchor textAnchor = TextAnchor.TOP_RIGHT;
-                TextUtils.drawRotatedString(label, g2, (float) (coordinates.getX() +2) ,
-                        (float) coordinates.getY()+0.3f*textLength*sizeDpiScale, textAnchor,
+                TextUtils.drawRotatedString(label, g2, (float) (coordinates.getX() + 2),
+                        (float) coordinates.getY() + 0.3f * textLength * sizeDpiScale, textAnchor,
                         -Math.PI / 2, textAnchor);
             }
             g2.setComposite(originalComposite);
